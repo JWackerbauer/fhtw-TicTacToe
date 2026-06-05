@@ -23,6 +23,7 @@ public class TicTacToe {
         // Prüfen, ob das Feld frei ist und Symbol platzieren (US1)
         if (board.isCellEmpty(row, col)) {
             board.place(row, col, currentPlayer.getMarker());
+            board.display();
             System.out.println("Spieler " + currentPlayer.getMarker() + " hat auf Feld (" + row + "," + col + ") gesetzt.");
         }
 
