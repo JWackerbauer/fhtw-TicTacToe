@@ -79,4 +79,74 @@ public class TicTacToeTest {
     public void testBoardReady() {
         assertNotNull(game.getBoard());
     }
+
+    @Test
+    public void testGetValidMovesInitially() {
+        assertEquals(9, game.getValidMoves().size());
+    }
+
+    @Test
+    public void testGetValidMovesAfterPlacement() {
+        game.getBoard().place(0, 0, 'X');
+        assertEquals(8, game.getValidMoves().size());
+    }
+
+    @Test
+    public void testExecuteMoveReturnsPlaying() {
+        String result = game.executeMove(0, 0);
+        assertEquals("playing", result);
+        assertEquals('O', game.getCurrentPlayer().getMarker());
+    }
+
+    @Test
+    public void testExecuteMoveWin() {
+        game.executeMove(0, 0);
+        game.executeMove(1, 0);
+        game.executeMove(0, 1);
+        game.executeMove(1, 1);
+        String result = game.executeMove(0, 2);
+        assertEquals("X wins", result);
+    }
+
+    @Test
+    public void testExecuteMoveDraw() {
+        game.executeMove(0, 0);
+        game.executeMove(0, 1);
+        game.executeMove(0, 2);
+        game.executeMove(1, 1);
+        game.executeMove(1, 0);
+        game.executeMove(1, 2);
+        game.executeMove(2, 1);
+        game.executeMove(2, 0);
+        String result = game.executeMove(2, 2);
+        assertEquals("draw", result);
+    }
+
+    @Test
+    public void testSaveAndLoadState() throws Exception {
+        game.executeMove(1, 1);
+        game.executeMove(0, 0);
+        String path = "target/test_state.json";
+        game.saveState(path);
+        TicTacToe loaded = TicTacToe.loadState(path);
+        assertEquals('X', loaded.getCurrentPlayer().getMarker());
+        assertEquals(' ', loaded.getBoard().getCell(0, 1));
+        assertEquals('O', loaded.getBoard().getCell(0, 0));
+        assertEquals('X', loaded.getBoard().getCell(1, 1));
+        assertEquals("playing", loaded.getStatus());
+    }
+
+    @Test
+    public void testInitialStatus() {
+        assertEquals("playing", game.getStatus());
+    }
+
+    @Test
+    public void testHasWinnerWithMarker() {
+        game.getBoard().place(0, 0, 'O');
+        game.getBoard().place(0, 1, 'O');
+        game.getBoard().place(0, 2, 'O');
+        assertTrue(game.hasWinner('O'));
+        assertFalse(game.hasWinner('X'));
+    }
 }

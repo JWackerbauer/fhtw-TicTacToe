@@ -30,15 +30,39 @@ No lint, formatter, typecheck, or codegen steps configured. No CI workflows pres
 
 ## Architecture
 
-Three classes matching the UML class diagram at repo root (`class_diagram.png`):
+Four classes matching the UML class diagram at repo root (`class_diagram.png`):
 
 - **`Player`** — holds a `char marker` (`'X'` / `'O'`)
 - **`Board`** — 3×3 `char[][]`, methods: `isCellEmpty`, `place`, `isFull`, `clear`, `print`
-- **`TicTacToe`** — controller with `start()` (console game loop using `Scanner`), `switchCurrentPlayer()`, `hasWinner()`
-
-`App.main()` creates a `TicTacToe` instance and calls `start()`. The game reads row/col from stdin.
+- **`TicTacToe`** — controller with `start()` (console game loop using `Scanner`), `switchCurrentPlayer()`, `hasWinner()`, plus file-based methods for CLI mode: `saveState`, `loadState`, `getValidMoves`, `executeMove`
+- **`App`** — interactive mode (no args) or CLI mode (arg dispatch)
 
 Win detection checks rows, columns, and both diagonals for three matching markers.
+
+## CLI mode (AI-vs-human play)
+
+State lives in `game_state.json` (hand-written JSON, no library dependency).
+
+Run from `tictactoe/` after `mvn clean package`:
+
+| Command | Action |
+|---|---|
+| `java -jar target/tictactoe-1.0-SNAPSHOT.jar new` | Reset game (X starts) |
+| `java -jar target/tictactoe-1.0-SNAPSHOT.jar state` | Show board, current player, status |
+| `java -jar target/tictactoe-1.0-SNAPSHOT.jar valid-moves` | List empty cells as `row col` |
+| `java -jar target/tictactoe-1.0-SNAPSHOT.jar move <row> <col>` | Place marker for current player |
+
+### Session protocol
+
+1. AI runs `new` → resets state
+2. AI runs `state` → shows initial board, prompts human
+3. Human runs `move <row> <col>` in their terminal
+4. AI runs `state` → sees updated board and current player
+5. AI runs `valid-moves` (optional) → sees options
+6. AI runs `move <row> <col>` → AI makes its move
+7. Loop to step 2 until status != `"playing"`
+
+The AI plays as X, the human plays as O. The AI never makes a human's move. Each player runs `move` for themselves. The state file is the shared source of truth.
 
 ## Tests
 
@@ -46,7 +70,7 @@ Win detection checks rows, columns, and both diagonals for three matching marker
 |---|---|---|
 | `Player` | `PlayerTest` | 2 |
 | `Board` | `BoardTest` | 6 |
-| `TicTacToe` | `TicTacToeTest` | 9 |
+| `TicTacToe` | `TicTacToeTest` | 17 |
 | `App` | `AppTest` | 1 |
 
 Run a single test class: `mvn test -Dtest=PlayerTest`
@@ -55,4 +79,5 @@ Run a single test class: `mvn test -Dtest=PlayerTest`
 
 - No Maven wrapper committed (`.mvn/wrapper/maven-wrapper.jar` is gitignored); requires system `mvn`.
 - No special environment setup needed. No test fixtures, no integration tests, no flaky suites.
-- `App.start()` uses `Scanner(System.in)` — interactive; not covered by unit tests.
+- `App.start()` (interactive mode) uses `Scanner(System.in)` — not covered by unit tests.
+- No JSON library; file format is hand-written/parsed in `TicTacToe.saveState`/`loadState`.

@@ -24,6 +24,38 @@ All commands run from the `tictactoe/` directory. Requires Java 17 and Maven.
 | `mvn clean package` | Build JAR (`target/tictactoe-1.0-SNAPSHOT.jar`) |
 | `java -jar target/tictactoe-1.0-SNAPSHOT.jar` | Run the game |
 
+## Human vs AI Play
+
+The game supports two modes:
+
+### Interactive mode (two human players)
+Run without arguments for a shared-terminal two-player game:
+```
+java -jar target/tictactoe-1.0-SNAPSHOT.jar
+```
+
+### CLI mode (human vs AI)
+State is stored in `game_state.json`. The AI and human take turns by running CLI commands. The AI plays as **X**, the human plays as **O**.
+
+**Commands (run from `tictactoe/`):**
+
+| Command | Action |
+|---|---|
+| `java -jar target/tictactoe-1.0-SNAPSHOT.jar new` | Start a new game (X starts) |
+| `java -jar target/tictactoe-1.0-SNAPSHOT.jar state` | Show board, current player, and status |
+| `java -jar target/tictactoe-1.0-SNAPSHOT.jar valid-moves` | List empty cells |
+| `java -jar target/tictactoe-1.0-SNAPSHOT.jar move <row> <col>` | Place your marker at (`row`, `col`) |
+
+**Session flow:**
+
+1. AI runs `java -jar ... new` to start the game
+2. AI runs `java -jar ... state` and prompts the human for a move
+3. Human runs `java -jar ... move <row> <col>` in their terminal
+4. AI checks the state, makes its move with `java -jar ... move <row> <col>`
+5. Repeat until the status shows a winner or draw
+
+The AI never makes a human's move — each player runs `move` for themselves.
+
 ## Example Output
 
 ```
