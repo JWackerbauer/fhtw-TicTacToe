@@ -45,6 +45,14 @@ public class TicTacToe {
                 System.out.println("Feld ist schon besetzt! Nochmal versuchen.");
             }
         }
+        Scanner playAgain = new Scanner(System.in);
+        System.out.print("Nochmal spielen? (j/n): ");
+        String answer = playAgain.nextLine();
+        if (answer.equals("j")) {
+            board.clear();
+            currentPlayer = player1;
+            start();
+        }
     }
 
     // Wechselt den aktuellen Spieler (private)
