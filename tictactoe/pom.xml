@@ -65,6 +65,13 @@
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
+          <configuration>
+            <archive>
+              <manifest>
+                <mainClass>at.fhtw.tictactoe.App</mainClass>
+              </manifest>
+            </archive>
+          </configuration>
           <version>3.4.2</version>
         </plugin>
         <plugin>
